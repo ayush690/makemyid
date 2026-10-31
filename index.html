@@ -1,0 +1,750 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MakeMyID - ID Card Maker</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary: #6655e8;
+    --dark: #172039;
+    --light: #f4f5fb;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: var(--light);
+    color: var(--dark);
+}
+
+header {
+    background: white;
+    padding: 18px 6%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 3px 15px #0000000c;
+}
+
+.logo {
+    font-size: 27px;
+    font-weight: 900;
+    color: var(--primary);
+}
+
+.logo span {
+    color: #172039;
+}
+
+header small {
+    color: #777;
+}
+
+.hero {
+    text-align: center;
+    padding: 45px 15px 30px;
+}
+
+.hero h1 {
+    font-size: clamp(30px, 5vw, 45px);
+    margin-bottom: 12px;
+}
+
+.hero h1 span {
+    color: var(--primary);
+}
+
+.hero p {
+    color: #777;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1200px;
+    padding: 20px;
+    margin: auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+    align-items: start;
+}
+
+.panel {
+    background: white;
+    padding: 25px;
+    border-radius: 18px;
+    box-shadow: 0 8px 30px #00000008;
+}
+
+.panel h2 {
+    font-size: 21px;
+    margin-bottom: 20px;
+}
+
+.section-title {
+    font-size: 14px;
+    color: var(--primary);
+    font-weight: bold;
+    margin: 22px 0 13px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 8px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 13px;
+}
+
+.field {
+    margin-bottom: 13px;
+}
+
+.field.full {
+    grid-column: 1 / -1;
+}
+
+label {
+    display: block;
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 7px;
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #e0e0eb;
+    border-radius: 9px;
+    outline: none;
+    font-size: 14px;
+    background: #fafaff;
+    font-family: inherit;
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: var(--primary);
+}
+
+input[type="file"] {
+    background: white;
+}
+
+button {
+    border: none;
+    padding: 13px 18px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: .2s;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    opacity: .9;
+}
+
+.primary-btn {
+    background: var(--primary);
+    color: white;
+}
+
+.download-btn {
+    background: #16a36a;
+    color: white;
+}
+
+.reset-btn {
+    background: #f0efff;
+    color: var(--primary);
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.preview-panel {
+    position: sticky;
+    top: 20px;
+}
+
+.preview-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.preview-heading small {
+    color: #888;
+}
+
+.card-stage {
+    background: #f2f1fb;
+    border-radius: 15px;
+    padding: 20px 10px;
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+}
+
+canvas {
+    width: 100%;
+    max-width: 500px;
+    height: auto;
+    border-radius: 13px;
+    box-shadow: 0 15px 35px #00000025;
+}
+
+.preview-note {
+    font-size: 12px;
+    color: #888;
+    margin-top: 15px;
+    text-align: center;
+}
+
+footer {
+    text-align: center;
+    padding: 30px 15px;
+    color: #888;
+    font-size: 13px;
+}
+
+@media(max-width: 850px) {
+    .container {
+        grid-template-columns: 1fr;
+    }
+
+    .preview-panel {
+        position: static;
+    }
+}
+
+@media(max-width: 480px) {
+    header {
+        padding: 16px;
+    }
+
+    header small {
+        display: none;
+    }
+
+    .panel {
+        padding: 17px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .field.full {
+        grid-column: auto;
+    }
+
+    .hero {
+        padding-top: 30px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">MakeMy<span>ID.</span></div>
+    <small>Smart ID Card Creator</small>
+</header>
+
+<section class="hero">
+    <h1>Create Your <span>Professional ID</span></h1>
+    <p>Design beautiful ID cards for schools, colleges, institutes and companies.</p>
+</section>
+
+<main class="container">
+
+<!-- FORM SECTION -->
+<section class="panel">
+
+<h2>✦ ID Card Information</h2>
+
+<div class="section-title">INSTITUTE INFORMATION</div>
+
+<div class="form-grid">
+
+<div class="field full">
+<label>School / Institute / Company Name</label>
+<input id="institute" value="MAKE MY INSTITUTE" placeholder="Enter institute name">
+</div>
+
+<div class="field">
+<label>Branch</label>
+<input id="branch" placeholder="e.g. Main Branch">
+</div>
+
+<div class="field">
+<label>Department</label>
+<input id="department" placeholder="e.g. Computer Science">
+</div>
+
+<div class="field">
+<label>Institute Phone</label>
+<input id="institutePhone" placeholder="+91 9876543210">
+</div>
+
+<div class="field">
+<label>Institute Website</label>
+<input id="website" placeholder="www.example.com">
+</div>
+
+<div class="field full">
+<label>Institute Logo</label>
+<input type="file" id="logoUpload" accept="image/*">
+</div>
+
+</div>
+
+<div class="section-title">PERSONAL INFORMATION</div>
+
+<div class="form-grid">
+
+<div class="field full">
+<label>Person's Full Name *</label>
+<input id="personName" value="YOUR NAME" placeholder="Enter full name">
+</div>
+
+<div class="field">
+<label>ID Card Number</label>
+<input id="idNumber" value="MMID2026001">
+</div>
+
+<div class="field">
+<label>Designation / Class</label>
+<input id="designation" placeholder="Student / Teacher / Staff">
+</div>
+
+<div class="field">
+<label>Date of Birth</label>
+<input type="date" id="dob">
+</div>
+
+<div class="field">
+<label>Blood Group</label>
+<select id="blood">
+<option value="N/A">Select Blood Group</option>
+<option>A+</option>
+<option>A-</option>
+<option>B+</option>
+<option>B-</option>
+<option>AB+</option>
+<option>AB-</option>
+<option>O+</option>
+<option>O-</option>
+</select>
+</div>
+
+<div class="field">
+<label>Contact Number</label>
+<input id="phone" placeholder="+91 9876543210">
+</div>
+
+<div class="field">
+<label>Valid Until</label>
+<input type="date" id="validity">
+</div>
+
+<div class="field full">
+<label>Address</label>
+<textarea id="address" rows="2" placeholder="Enter address"></textarea>
+</div>
+
+<div class="field full">
+<label>Upload Person's Photo *</label>
+<input type="file" id="photoUpload" accept="image/*">
+</div>
+
+</div>
+
+<div class="section-title">DESIGN SETTINGS</div>
+
+<div class="form-grid">
+
+<div class="field full">
+<label>Choose Card Theme</label>
+<select id="theme">
+<option value="purple">Royal Purple</option>
+<option value="blue">Ocean Blue</option>
+<option value="green">Emerald Green</option>
+<option value="black">Premium Black</option>
+<option value="red">Ruby Red</option>
+</select>
+</div>
+
+</div>
+
+<div class="actions">
+<button class="primary-btn" id="updateBtn">Update ID Card ↗</button>
+<button class="reset-btn" id="resetBtn">Reset Form</button>
+</div>
+
+</section>
+
+<!-- PREVIEW SECTION -->
+<section class="panel preview-panel">
+
+<div class="preview-heading">
+<div>
+<h2>Live Preview</h2>
+<small>Your ID card design</small>
+</div>
+<span style="color:#16a36a;font-size:13px">● LIVE</span>
+</div>
+
+<div class="card-stage">
+<canvas id="idCanvas" width="1012" height="638"></canvas>
+</div>
+
+<div class="preview-note">
+High-quality ID card • PNG format • 1012 × 638 px
+</div>
+
+<div class="actions">
+<button class="download-btn" id="downloadBtn">
+⬇ Download ID Card
+</button>
+<button class="primary-btn" id="shareBtn">
+↗ Share
+</button>
+</div>
+
+</section>
+
+</main>
+
+<footer>
+© 2026 MakeMyID. Create professional ID cards easily.
+</footer>
+
+<script>
+
+const $ = id => document.getElementById(id);
+
+const canvas = $("idCanvas");
+const ctx = canvas.getContext("2d");
+
+let photo = null;
+let logo = null;
+
+const themes = {
+    purple: ["#30206f", "#7558ef"],
+    blue: ["#063b71", "#1689d5"],
+    green: ["#075a42", "#16a77a"],
+    black: ["#111827", "#465269"],
+    red: ["#751d35", "#dc4962"]
+};
+
+const fields = [
+    "institute", "branch", "department", "institutePhone",
+    "website", "personName", "idNumber", "designation",
+    "dob", "blood", "phone", "validity", "address", "theme"
+];
+
+// Rounded rectangle helper
+function rounded(x, y, w, h, r, color) {
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.roundRect(x, y, w, h, r);
+    ctx.fill();
+}
+
+// Draw text
+function write(text, x, y, size, color, weight="normal") {
+    ctx.fillStyle = color;
+    ctx.font = `${weight} ${size}px Arial`;
+    ctx.fillText(String(text || ""), x, y);
+}
+
+// Fit image inside a box
+function drawImageFit(img, x, y, w, h) {
+    const scale = Math.min(w / img.width, h / img.height);
+    const sw = w / scale;
+    const sh = h / scale;
+    const sx = (img.width - sw) / 2;
+    const sy = (img.height - sh) / 2;
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.roundRect(x, y, w, h, 15);
+    ctx.clip();
+    ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
+    ctx.restore();
+}
+
+function formatDate(value) {
+    if (!value) return "Not provided";
+    const d = new Date(value + "T00:00:00");
+    return d.toLocaleDateString("en-IN");
+}
+
+function drawCard() {
+
+    const theme = themes[$("theme").value] || themes.purple;
+
+    // Background
+    ctx.clearRect(0, 0, 1012, 638);
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, 1012, 638);
+
+    // Top header
+    const gradient = ctx.createLinearGradient(0, 0, 1012, 0);
+    gradient.addColorStop(0, theme[0]);
+    gradient.addColorStop(1, theme[1]);
+
+    rounded(0, 0, 1012, 190, 0, gradient);
+
+    // Decorative circles
+    ctx.globalAlpha = 0.09;
+    ctx.fillStyle = "#ffffff";
+    ctx.beginPath();
+    ctx.arc(900, 20, 190, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(980, 180, 100, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+
+    // Logo
+    if (logo) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(85, 90, 52, 0, Math.PI * 2);
+        ctx.clip();
+        ctx.drawImage(logo, 33, 38, 104, 104);
+        ctx.restore();
+    } else {
+        rounded(33, 38, 104, 104, 22, "#ffffff");
+        write("MM", 53, 104, 35, theme[0], "bold");
+    }
+
+    // Institute name
+    ctx.textAlign = "left";
+    write($("institute").value || "INSTITUTE NAME", 165, 80, 33, "#ffffff", "bold");
+    write(
+        ($("branch").value || "Main Branch") +
+        "  •  " + ($("department").value || "Department"),
+        165, 122, 19, "#e9e7ff"
+    );
+
+    write("IDENTITY CARD", 165, 158, 16, "#ffffff", "bold");
+
+    // Profile photo
+    if (photo) {
+        drawImageFit(photo, 62, 222, 235, 285);
+    } else {
+        rounded(62, 222, 235, 285, 15, "#ecebfa");
+        write("UPLOAD", 132, 350, 24, "#777777", "bold");
+        write("YOUR PHOTO", 112, 380, 19, "#777777");
+    }
+
+    // Details
+    const x = 340;
+
+    write($("personName").value || "YOUR NAME", x, 250, 34, theme[0], "bold");
+
+    ctx.fillStyle = theme[1];
+    ctx.fillRect(x, 269, 110, 5);
+
+    write("ID NUMBER", x, 320, 15, "#777777", "bold");
+    write($("idNumber").value || "MMID0001", x, 350, 25, "#222222", "bold");
+
+    write("DESIGNATION / CLASS", x, 400, 15, "#777777", "bold");
+    write($("designation").value || "Student / Staff", x, 429, 22, "#222222");
+
+    write("DATE OF BIRTH", x, 480, 15, "#777777", "bold");
+    write(formatDate($("dob").value), x, 509, 20, "#222222");
+
+    // Right-side details
+    write("BLOOD GROUP", 710, 320, 15, "#777777", "bold");
+    write($("blood").value, 710, 350, 24, "#d83c4c", "bold");
+
+    write("PHONE", 710, 400, 15, "#777777", "bold");
+    write($("phone").value || "Not provided", 710, 429, 19, "#222222");
+
+    write("VALID UNTIL", 710, 480, 15, "#777777", "bold");
+    write(formatDate($("validity").value), 710, 509, 19, "#222222");
+
+    // Bottom section
+    ctx.fillStyle = "#f0effa";
+    ctx.fillRect(0, 550, 1012, 88);
+
+    write("ADDRESS", 35, 580, 14, theme[0], "bold");
+
+    const address = $("address").value || "Institute address";
+    write(address.slice(0, 65), 35, 609, 17, "#333333");
+
+    // Institute contact
+    ctx.textAlign = "right";
+    write(
+        $("institutePhone").value || $("website").value || "MAKE MY ID",
+        970, 609, 16, theme[0], "bold"
+    );
+
+    ctx.textAlign = "left";
+
+}
+
+fields.forEach(id => {
+    $(id).addEventListener("input", drawCard);
+    $(id).addEventListener("change", drawCard);
+});
+
+// Load image safely
+function loadImage(file, callback) {
+
+    if (!file || !file.type.startsWith("image/")) {
+        alert("Please select a valid image.");
+        return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+        alert("Please select an image smaller than 5 MB.");
+        return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function(e) {
+        const img = new Image();
+
+        img.onload = function() {
+            callback(img);
+            drawCard();
+        };
+
+        img.onerror = () => alert("Could not load this image.");
+
+        img.src = e.target.result;
+    };
+
+    reader.readAsDataURL(file);
+}
+
+$("photoUpload").addEventListener("change", function() {
+    loadImage(this.files[0], img => photo = img);
+});
+
+$("logoUpload").addEventListener("change", function() {
+    loadImage(this.files[0], img => logo = img);
+});
+
+// Update
+$("updateBtn").addEventListener("click", () => {
+    drawCard();
+    alert("ID Card updated successfully!");
+});
+
+// Download
+$("downloadBtn").addEventListener("click", () => {
+
+    if (!$("personName").value.trim()) {
+        alert("Please enter person's name.");
+        return;
+    }
+
+    if (!photo) {
+        alert("Please upload person's photo.");
+        return;
+    }
+
+    drawCard();
+
+    const link = document.createElement("a");
+    link.download = "MakeMyID-" +
+        $("personName").value.trim().replace(/[^a-z0-9]/gi, "_") +
+        ".png";
+
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+});
+
+// Share
+$("shareBtn").addEventListener("click", async () => {
+
+    if (!$("personName").value.trim() || !photo) {
+        alert("Enter person's name and upload a photo first.");
+        return;
+    }
+
+    drawCard();
+
+    canvas.toBlob(async blob => {
+
+        if (!blob) {
+            alert("Could not create ID card.");
+            return;
+        }
+
+        const file = new File(
+            [blob],
+            "MakeMyID.png",
+            {type: "image/png"}
+        );
+
+        if (navigator.canShare && navigator.canShare({files: [file]})) {
+            try {
+                await navigator.share({
+                    title: "My ID Card",
+                    text: "Created with MakeMyID",
+                    files: [file]
+                });
+            } catch(error) {
+                if (error.name !== "AbortError") {
+                    alert("Sharing failed. Please download the card.");
+                }
+            }
+        } else {
+            alert("Direct sharing is not supported here. Please download the PNG and share it manually.");
+        }
+
+    }, "image/png");
+});
+
+// Reset
+$("resetBtn").addEventListener("click", () => {
+
+    if (!confirm("Reset all ID card information?")) return;
+
+    fields.forEach(id => $(id).value = "");
+
+    $("institute").value = "MAKE MY INSTITUTE";
+    $("personName").value = "YOUR NAME";
+    $("idNumber").value = "MMID2026001";
+    $("theme").value = "purple";
+    $("blood").value = "N/A";
+
+    $("photoUpload").value = "";
+    $("logoUpload").value = "";
+
+    photo = null;
+    logo = null;
+
+    drawCard();
+});
+
+drawCard();
+
+</script>
+
+</body>
+</html>
